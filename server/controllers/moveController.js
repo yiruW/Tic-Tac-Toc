@@ -5,6 +5,17 @@ const Move = require('../models/moveModel')
 const { createLog } = require('./logsController');
 const { findGameById } = require('./gameController');
 
+const WINNING_COMBOS = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6]
+]
+
 /*
     Method: POST /api/move
     return: 
@@ -15,11 +26,11 @@ const handleMove = asyncHandler( async (req, res) => {
 
     try {
         if (isValid(gameId, player, location)) {
-            const newMove = { gameId: new ObjectId(gameId), player: player, isEventValid: true };
+            const newMove = { gameId: new ObjectId(gameId), player: player, location: location };
             await createMove(newMove);
-            if (isWin) {
+            if (await isWin(gameId, player)) {
                 message = `Player ${player} Wins`;
-            } else if (isDraw) {
+            } else if (await isDraw(gameId)) {
                 message = `Game Ends in a Draw`;
             } else {
                 // update Game Player
@@ -70,7 +81,7 @@ const isCurrentPlayerTurn = async (gameId, player) => {
 const isMoveLocationValid = async (gameId, location) => {
     try {
         const moves = await getMovesByGameId(new ObjectId(gameId));
-        return !moves.some(move => move.location === location);
+        return !moves?.some(move => move.location === location);
     } catch (error) {
         console.error('Error checking move location:', error);
         throw error;
@@ -84,12 +95,33 @@ const isValid = async (gameId, player, location) => {
     return isPlayerValid && isLocationValid
 }
 
-const isWin = () => {
-    return true
+const isWin = async (gameId, player) => {
+    try {
+        const moves = await getMovesByGameId(gameId);
+        const currentPlayerMoves = moves.reduce((arr, move) => {
+            if (move.player === player) {
+                arr.push(move.location);
+            }
+            return arr;
+        }, []);
+        const result =  WINNING_COMBOS.some(
+            combination => combination.every(
+                element => currentPlayerMoves.includes(element)));
+        return result
+    } catch (error) {
+        console.error('Error checking WIN condition:', error);
+        throw error;
+    }
 }
 
-const isDraw = () => {
-    return true
+const isDraw = async (gameId) => {
+    try {
+        const moves = await getMovesByGameId(gameId)
+        return moves.length >= 9
+    } catch (error) {
+        console.error('Error checking DRAW condition:', error);
+        throw error;
+    }
 }
 
 module.exports = handleMove
