@@ -3,7 +3,7 @@ import { Button, Container, Grid } from '@mui/material';
 import React, { useState } from 'react';
 import GameCell from './GameCell';
 import axios from 'axios';
-import SnakeBar from './SnakeBar';
+import SnackbarNotification from './SnackbarNotification';
   
 export default function GameBoard({}: {}){
     const [gameId, setGameId] = useState('')
@@ -56,7 +56,7 @@ export default function GameBoard({}: {}){
 
     return (
         <Container sx={{ mt: '80px' }}>
-            <SnakeBar
+            <SnackbarNotification
                 open={snackbarOpen}
                 handleClose={() => setSnackbarOpen(false)}
                 message={snakebarMessage}
