@@ -1,12 +1,25 @@
 'use client'
-import { Container, Grid } from '@mui/material';
+import { Button, Container, Grid } from '@mui/material';
 import React, { useState } from 'react';
 import GameCell from './GameCell';
+import axios from 'axios';
   
 export default function GameBoard({}: {}){
+    const [gameId, setGameId] = useState('')
     const [board, setBoard] = useState<string[][]>([['', '', ''], ['', '', ''], ['', '', '']]);
     const [currentPlayer, setCurrentPlayer] = useState<string>('X');
 
+    const restartGame = async () => {
+        try {
+            const response = await axios.post('http://localhost:8000/api/game');
+            if (response.status == 201) setGameId(response.data._id)
+            setBoard([['', '', ''], ['', '', ''], ['', '', '']])
+            setCurrentPlayer('X')
+            setGameId(response.data._id)
+        } catch (error) {
+            console.error('Error restarting game:', error);
+        }
+    }
     const handleCellClick = async (row: number, col: number) => {}
 
     return (
@@ -24,6 +37,11 @@ export default function GameBoard({}: {}){
                         ))}
                     </Grid>
                 ))}
+            </Grid>
+            <Grid container justifyContent="center" style={{ marginTop: '20px' }}>
+                <Button variant="contained" color="primary" onClick={restartGame}>
+                    {gameId ? 'Restart Game' : 'Start Game'}
+                </Button>
             </Grid>
         </ Container>
     );
