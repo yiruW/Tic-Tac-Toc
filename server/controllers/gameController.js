@@ -10,16 +10,4 @@ const startGame = asyncHandler( async (req, res) => {
     res.status(201).json(game)
 })
 
-const findGameById = async(gameId) => {
-    try{
-        const game = await Game.findById(new ObjectId(gameId))
-        return game
-    } catch(error) {
-        throw error
-    }
-}
-
-module.exports = {
-    startGame,
-    findGameById
-}
+module.exports = startGame
