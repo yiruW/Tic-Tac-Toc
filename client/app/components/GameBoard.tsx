@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import GameCell from './GameCell';
 import axios from 'axios';
 import SnackbarNotification from './SnackbarNotification';
+import GameDialog from './GameDialog';
   
 export default function GameBoard({}: {}){
     const [gameId, setGameId] = useState('')
@@ -12,6 +13,8 @@ export default function GameBoard({}: {}){
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarType, setSnakebarType] = useState<'success' | 'error'>('success');
     const [snakebarMessage, setsnakebarMessage] = useState('');
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [dialogMessage, setDialogMessage] = useState('');
 
     const restartGame = async () => {
         try {
@@ -20,6 +23,7 @@ export default function GameBoard({}: {}){
             setBoard([['', '', ''], ['', '', ''], ['', '', '']])
             setCurrentPlayer('X')
             setGameId(response.data._id)
+            setDialogOpen(false)
         } catch (error) {
             console.error('Error restarting game:', error);
         }
@@ -31,27 +35,39 @@ export default function GameBoard({}: {}){
         setSnackbarOpen(true);
     };
 
+    const showDialog = (message: string) => {
+        setDialogMessage(message);
+        setDialogOpen(true);
+    };
+
     const handleCellClick = async (row: number, col: number) => {
-        axios.post('http://localhost:8000/api/move', {
-            gameId: gameId,
-            player: currentPlayer,
-            location: row * 3 + col
-        }).then((response) => {
-            // handle valid move
-            const newBoard = board.map((r, ri) => 
-                r.map((c, ci) => (ri === row && ci === col ? currentPlayer : c))
-            );
-            setBoard(newBoard);
-            setCurrentPlayer(currentPlayer === 'X' ? 'O' : 'X')
-            showSnackbar( 'success', response.data.msg)
-        }).catch((error) => {
-            if (error.response!.status === 400) {
-                // handle invalid move
-                showSnackbar( 'error', error.response?.data?.message)
-            } else {
-                console.error('Error making move:', error)
-            }
-        })
+        if (!gameId) showDialog("Please start a new game")
+        else {
+            axios.post('http://localhost:8000/api/move', {
+                gameId: gameId,
+                player: currentPlayer,
+                location: row * 3 + col
+            }).then((response) => {
+                // handle valid move
+                const newBoard = board.map((r, ri) => 
+                    r.map((c, ci) => (ri === row && ci === col ? currentPlayer : c))
+                );
+                setBoard(newBoard);
+                setCurrentPlayer(currentPlayer === 'X' ? 'O' : 'X')
+                if (response.data.isGameEnd) {
+                    showDialog(response.data.msg)
+                } else {
+                    showSnackbar('success', response.data.msg)
+                }
+            }).catch((error) => {
+                if (error.response!.status === 400) {
+                    // handle invalid move
+                    showSnackbar('error', error.response?.data?.message)
+                } else {
+                    console.error('Error making move:', error)
+                }
+            })
+        }
     }
 
     return (
@@ -61,6 +77,12 @@ export default function GameBoard({}: {}){
                 handleClose={() => setSnackbarOpen(false)}
                 message={snakebarMessage}
                 type={snackbarType}
+            />
+            <GameDialog
+                open={dialogOpen}
+                onClose={() => setDialogOpen(false)}
+                onRestart={restartGame}
+                message={dialogMessage}
             />
             <Grid container direction="row" justifyContent="center"  alignItems="center">
                 {board.map((row, rowIndex) => (
