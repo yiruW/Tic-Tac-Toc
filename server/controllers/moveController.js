@@ -33,7 +33,6 @@ const handleMove = asyncHandler( async (req, res) => {
             } else if (await isDraw(gameId)) {
                 message = `Game Ends in a Draw`;
             } else {
-                // update Game Player
                 message = `Player ${player} made a valid move`;
             }
             createLog({...log, message: message});
@@ -65,18 +64,18 @@ const getMovesByGameId = async (gameId) => {
     }
 }
 
-const isCurrentPlayerTurn = async (gameId, player) => {
-    try {
-        const currentGame = await findGameById(gameId);
-        if (currentGame) {
-            return currentGame.currentPlayer === player;
-        }
-        return false;
-    } catch (error) {
-        console.error('Error checking player valid: ', error);
-        throw error;
-    }
-}
+// const isCurrentPlayerTurn = async (gameId, player) => {
+//     try {
+//         const currentGame = await findGameById(gameId);
+//         if (currentGame) {
+//             return currentGame.currentPlayer === player;
+//         }
+//         return false;
+//     } catch (error) {
+//         console.error('Error checking player valid: ', error);
+//         throw error;
+//     }
+// }
 
 const isMoveLocationValid = async (gameId, location) => {
     try {
@@ -90,9 +89,9 @@ const isMoveLocationValid = async (gameId, location) => {
 
 // Check Move Valid - Player & Location
 const isValid = async (gameId, player, location) => {
-    const isPlayerValid = await isCurrentPlayerTurn(gameId, player);
+    // const isPlayerValid = await isCurrentPlayerTurn(gameId, player);
     const isLocationValid = await isMoveLocationValid(gameId, location);
-    return isPlayerValid && isLocationValid
+    return isLocationValid
 }
 
 const isWin = async (gameId, player) => {
