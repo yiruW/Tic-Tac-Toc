@@ -16,6 +16,13 @@ const WINNING_COMBOS = [
     [2, 4, 6]
 ]
 
+const LOG_MESSAGE = {
+    WIN: (player) => `Player ${player} Wins`,
+    DRAW: () => `Game Ends in a Draw`,
+    VALID_MOVE: (player, location) => `Player ${player} made a valid move to [${Math.floor(location/3)}, ${location % 3}]`,
+    INVALID_MOVE: (player, location) => `Player ${player} made a invalid move to [${Math.floor(location/3)}, ${location % 3}]`,
+}
+
 /*
     Method: POST /api/move
     return: 
@@ -23,24 +30,28 @@ const WINNING_COMBOS = [
 const handleMove = asyncHandler( async (req, res) => {
     const {gameId, player, location} = req.body;
     const log = { gameId: new ObjectId(gameId), message: '', isEventValid: true };
+    let message = '';
+    let isGameEnd = false;
 
     try {
         if (isValid(gameId, player, location)) {
             const newMove = { gameId: new ObjectId(gameId), player: player, location: location };
             await createMove(newMove);
             if (await isWin(gameId, player)) {
-                message = `Player ${player} Wins`;
+                message = LOG_MESSAGE.WIN(player);
+                isGameEnd = true;
             } else if (await isDraw(gameId)) {
-                message = `Game Ends in a Draw`;
+                message = LOG_MESSAGE.DRAW();
+                isGameEnd = true;
             } else {
-                message = `Player ${player} made a valid move`;
+                message = LOG_MESSAGE.VALID_MOVE(player, location);
             }
             createLog({...log, message: message});
-            res.status(200).json();
+            res.status(200).json({ success: true, isGameEnd: isGameEnd, msg: message });
         } else {
-            message = `Player ${player} made a invalid move`;
+            message = LOG_MESSAGE.INVALID_MOVE(player, location);
             createLog({...log, message: message, isEventValid: false});
-            res.status(400).json();
+            res.status(400).json({ message: message });
         }
     } catch (error) {
         console.error(error);
