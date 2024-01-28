@@ -34,7 +34,7 @@ const handleMove = asyncHandler( async (req, res) => {
     let isGameEnd = false;
 
     try {
-        if (isValid(gameId, player, location)) {
+        if (await isValid(gameId, player, location)) {
             const newMove = { gameId: new ObjectId(gameId), player: player, location: location };
             await createMove(newMove);
             if (await isWin(gameId, player)) {
