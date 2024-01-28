@@ -9,5 +9,6 @@ connectDB()
 const app = express()
 
 app.use('/api/game', require('./routes/gameRoutes'))
+app.use('/api/logs', require('./routes/logsRoutes'))
 
 app.listen(port, () => console.log(`sever run on port ${port}`))
