@@ -1,6 +1,5 @@
 const asyncHandler = require('express-async-handler')
 const Game = require('../models/gameModel')
-const { ObjectId } = require('mongodb');
 
 /*
     Method: POST /api/game
@@ -13,7 +12,7 @@ const startGame = asyncHandler( async (req, res) => {
 
 const findGameById = async(gameId) => {
     try{
-        const game = await Game.findById(new ObjectId(gameId)).lean()
+        const game = await Game.findById(new ObjectId(gameId))
         return game
     } catch(error) {
         throw error
