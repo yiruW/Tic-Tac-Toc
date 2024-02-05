@@ -7,7 +7,14 @@ const { ObjectId } = require('mongodb');
     Return: Log[]
 */
 const getLogs = asyncHandler( async (req, res) => {
-    const logs = await Log.find()
+    const logs = await Log.aggregate([
+        { $group: { 
+            _id: "$gameId", 
+            logs: { $push: "$$ROOT" },
+            createdAt: { $min: "$createdAt"}
+        }},
+        { $sort: { createdAt: -1 } } 
+    ])
     res.status(200).json(logs)
 })
 
