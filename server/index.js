@@ -12,8 +12,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use('/api/game', require('./routes/gameRoutes'));
-app.use('/api/logs', require('./routes/logsRoutes'));
-app.use('/api/move', require('./routes/moveRoutes'));
+app.use('/api/game', require('./routers/gameRouter'));
+app.use('/api/logs', require('./routers/logsRouter'));
+app.use('/api/move', require('./routers/moveRouter'));
 
 app.listen(port, () => console.log(`sever run on port ${port}`))

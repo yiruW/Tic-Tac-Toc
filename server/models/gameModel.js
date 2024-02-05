@@ -1,9 +1,9 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
-const GameSchema = new mongoose.Schema({
-    board: [[String]],
-}, {
-    timestamps: true
-})
+const GameSchema = new mongoose.Schema(
+  {
+    timestamps: true,
+  }
+);
 
-module.exports = mongoose.model('Game', GameSchema)
+module.exports = mongoose.model("Game", GameSchema);
