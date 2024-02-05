@@ -3,17 +3,12 @@ import GameBoard from "./components/GameBoard";
 
 export default function Home() {
   return (
-    <main >
+    <main>
       <AppBar>
         <Toolbar>
           <Typography component="div" sx={{ flexGrow: 1 }}>
-            Tic Tac Toc
+            Tic Tac Toe
           </Typography>
-            {/* {pages.map((page) => {
-              return (
-                <Button href={page.href} sx={{ background: "#fff", mx: 1}}>{page.name}</Button>
-              );
-            })} */}
         </Toolbar>
       </AppBar>
       <GameBoard />
