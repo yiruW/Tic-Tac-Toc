@@ -5,7 +5,7 @@
 ```
 git clone git@github.com:yiruW/Tic-Tac-Toe.git
 ```
-2. put `.env` file under `server` folder
+2. add environment variables to server/.env
 3. run script
 ```
 cd Tic-Tac-Toe
