@@ -6,7 +6,7 @@
   "scripts": {
     "server": "npm start --prefix server",
     "client": "npm run build --prefix client && npm start --prefix client",
-    "game": "concurrently \"npm run server\" \"npm run client\"",
+    "start": "concurrently \"npm run server\" \"npm run client\"",
     "server:install": "cd server && npm install",
     "client:install": "cd client && npm install",
     "install": "concurrently \"npm run server:install\" \"npm run client:install\""
